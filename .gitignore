@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+
+# React Native
+android/.gradle
+android/app/build
+ios/build
+ios/Pods
+
+# Environment files
+.env
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# IntelliJ
+.idea/
+
+# Mac
+.DS_Store
+
+# Java
+target/
+*.class
+
+# Gradle
+.gradle/
+
+# Local configs
+local.properties
