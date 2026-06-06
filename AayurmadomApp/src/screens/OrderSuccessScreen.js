@@ -41,16 +41,25 @@ export default function OrderSuccessScreen({ navigation }) {
       </View>
 
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Home')}
-      >
-
-        <Text style={styles.buttonText}>
-          Continue Shopping
-        </Text>
-
-      </TouchableOpacity>
-
+  style={styles.button}
+  onPress={() =>
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'Main',
+          params: {
+            screen: 'Home',
+          },
+        },
+      ],
+    })
+  }
+>
+  <Text style={styles.buttonText}>
+    Continue Shopping
+  </Text>
+</TouchableOpacity>
     </View>
   );
 }

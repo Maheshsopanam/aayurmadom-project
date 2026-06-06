@@ -1,62 +1,63 @@
 import React, { useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { placeOrderApi } from '../api/orderApi';
+
 import {
+  ScrollView,
   View,
- Text,
+  Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   Alert,
 } from 'react-native';
 
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
+import { placeOrderApi } from '../api/orderApi';
 
 export default function CheckoutScreen({ navigation }) {
-  const { cartItems, getTotalPrice } = useContext(CartContext);
+  const { cartItems, getTotalPrice, clearCart } = useContext(CartContext);
+  const { userEmail } = useContext(AuthContext);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const { userEmail } = useContext(AuthContext);
-  const placeOrder = async () => {
-  if (!name || !phone || !address) {
-    Alert.alert('Missing Details', 'Please fill all fields');
-    return;
-  }
 
-  try {
-    for (const item of cartItems) {
-      await placeOrderApi({
-        userEmail: userEmail,
-        productName: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        totalPrice: item.price * item.quantity,
-      });
+  const placeOrder = async () => {
+    if (!name || !phone || !address) {
+      Alert.alert('Missing Details', 'Please fill all fields');
+      return;
     }
 
-    navigation.navigate('OrderSuccess');
-  } catch (error) {
-    console.log(error);
-    Alert.alert('Error', 'Failed to place order');
-  }
-};
+    if (cartItems.length === 0) {
+      Alert.alert('Empty Cart', 'Please add products before placing an order');
+      return;
+    }
+
+    try {
+      for (const item of cartItems) {
+        await placeOrderApi({
+          userEmail: userEmail,
+          productName: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          totalPrice: item.price * item.quantity,
+        });
+      }
+
+      clearCart();
+      navigation.navigate('OrderSuccess');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Failed to place order');
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
-
-      <Text style={styles.title}>
-        Checkout
-      </Text>
+      <Text style={styles.title}>Checkout</Text>
 
       <View style={styles.formBox}>
-
-        <Text style={styles.label}>
-          Full Name
-        </Text>
-
+        <Text style={styles.label}>Full Name</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter your name"
@@ -64,10 +65,7 @@ export default function CheckoutScreen({ navigation }) {
           onChangeText={setName}
         />
 
-        <Text style={styles.label}>
-          Phone Number
-        </Text>
-
+        <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter phone number"
@@ -76,10 +74,7 @@ export default function CheckoutScreen({ navigation }) {
           onChangeText={setPhone}
         />
 
-        <Text style={styles.label}>
-          Delivery Address
-        </Text>
-
+        <Text style={styles.label}>Delivery Address</Text>
         <TextInput
           style={[styles.input, styles.addressInput]}
           placeholder="Enter full address"
@@ -87,22 +82,13 @@ export default function CheckoutScreen({ navigation }) {
           value={address}
           onChangeText={setAddress}
         />
-
       </View>
 
       <View style={styles.summaryBox}>
-
-        <Text style={styles.summaryTitle}>
-          Order Summary
-        </Text>
+        <Text style={styles.summaryTitle}>Order Summary</Text>
 
         {cartItems.map(item => (
-
-          <View
-            key={item.id}
-            style={styles.itemRow}
-          >
-
+          <View key={item.id} style={styles.itemRow}>
             <Text style={styles.itemName}>
               {item.name} × {item.quantity}
             </Text>
@@ -110,42 +96,23 @@ export default function CheckoutScreen({ navigation }) {
             <Text style={styles.itemPrice}>
               ₹{item.price * item.quantity}
             </Text>
-
           </View>
-
         ))}
 
         <View style={styles.totalRow}>
-
-          <Text style={styles.totalText}>
-            Total
-          </Text>
-
-          <Text style={styles.totalPrice}>
-            ₹{getTotalPrice()}
-          </Text>
-
+          <Text style={styles.totalText}>Total</Text>
+          <Text style={styles.totalPrice}>₹{getTotalPrice()}</Text>
         </View>
-
       </View>
 
-      <TouchableOpacity
-        style={styles.orderBtn}
-        onPress={placeOrder}
-      >
-
-        <Text style={styles.orderBtnText}>
-          Place Order
-        </Text>
-
+      <TouchableOpacity style={styles.orderBtn} onPress={placeOrder}>
+        <Text style={styles.orderBtnText}>Place Order</Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: '#F8F2E7',
@@ -250,5 +217,4 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 18,
   },
-
 });
