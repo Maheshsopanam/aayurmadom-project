@@ -10,7 +10,7 @@ import CheckoutScreen from './src/screens/CheckoutScreen';
 import OrderSuccessScreen from './src/screens/OrderSuccessScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
-
+import MyOrdersScreen from './src/screens/MyOrdersScreen';
 import { CartProvider } from './src/context/CartContext';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 
@@ -62,7 +62,17 @@ function AppNavigator() {
                 headerTintColor: '#FFFFFF',
               }}
             />
-
+            <Stack.Screen
+                name="MyOrders"
+                component={MyOrdersScreen}
+                options={{
+                  title: 'My Orders',
+                  headerStyle: {
+                    backgroundColor: '#1F4D36',
+                  },
+                  headerTintColor: '#FFFFFF',
+                }}
+              />
             <Stack.Screen
               name="Checkout"
               component={CheckoutScreen}

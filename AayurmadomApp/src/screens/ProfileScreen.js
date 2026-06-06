@@ -9,7 +9,7 @@ import {
 
 import { AuthContext } from '../context/AuthContext';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { userEmail, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
@@ -42,6 +42,15 @@ export default function ProfileScreen() {
           {userEmail}
         </Text>
       </View>
+
+      <TouchableOpacity
+        style={styles.ordersButton}
+        onPress={() => navigation.navigate('MyOrders')}
+      >
+        <Text style={styles.ordersText}>
+          My Orders
+        </Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.logoutButton}
@@ -88,9 +97,23 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 
+  ordersButton: {
+    backgroundColor: '#1F4D36',
+    marginTop: 25,
+    paddingVertical: 16,
+    borderRadius: 18,
+    alignItems: 'center',
+  },
+
+  ordersText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+
   logoutButton: {
     backgroundColor: '#D91E46',
-    marginTop: 30,
+    marginTop: 15,
     paddingVertical: 16,
     borderRadius: 18,
     alignItems: 'center',
