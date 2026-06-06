@@ -1,5 +1,7 @@
 import React, { useContext, useState } from 'react';
 
+import { AuthContext } from '../context/AuthContext';
+import { placeOrderApi } from '../api/orderApi';
 import {
   View,
  Text,
@@ -18,21 +20,30 @@ export default function CheckoutScreen({ navigation }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const { userEmail } = useContext(AuthContext);
+  const placeOrder = async () => {
+  if (!name || !phone || !address) {
+    Alert.alert('Missing Details', 'Please fill all fields');
+    return;
+  }
 
-  const placeOrder = () => {
-
-    if (!name || !phone || !address) {
-
-      Alert.alert(
-        'Missing Details',
-        'Please fill all fields'
-      );
-
-      return;
+  try {
+    for (const item of cartItems) {
+      await placeOrderApi({
+        userEmail: userEmail,
+        productName: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        totalPrice: item.price * item.quantity,
+      });
     }
 
-   navigation.navigate('OrderSuccess');
-  };
+    navigation.navigate('OrderSuccess');
+  } catch (error) {
+    console.log(error);
+    Alert.alert('Error', 'Failed to place order');
+  }
+};
 
   return (
     <ScrollView style={styles.container}>

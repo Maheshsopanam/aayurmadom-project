@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import {
   SafeAreaView,
   View,
@@ -6,55 +7,65 @@ import {
   StyleSheet,
   ScrollView,
   TextInput,
-  Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
-import { products } from '../data/products';
+import { getProducts } from '../api/productApi';
 
-export default function HomeScreen({ navigation }) 
+export default function HomeScreen({ navigation }) {
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [loading, setLoading] = useState(true);
 
-{
-    const [search, setSearch] = useState('');
-const [selectedCategory, setSelectedCategory] = useState('All');
-const categories = [
-  'All',
-  'Eye Care',
-  'Hair Care',
-  'Skin Care',
-  'Baby Care',
-];
-const filteredProducts = products.filter(product => {
+  const categories = ['All', 'Eye Care', 'Hair Care', 'Skin Care', 'Baby Care'];
 
-  const matchesSearch =
-    product.name.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
-  const matchesCategory =
-    selectedCategory === 'All'
-      ? true
-      : product.category === selectedCategory;
+  const loadProducts = async () => {
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.log('Error loading products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  return matchesSearch && matchesCategory;
-});
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === 'All'
+        ? true
+        : product.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
           <Text style={styles.logo}>AAYURMADOM</Text>
-          <Text style={styles.tagline}>
-            Purely Natural, Purely You
-          </Text>
+          <Text style={styles.tagline}>Purely Natural, Purely You</Text>
         </View>
 
         <View style={styles.searchBox}>
           <TextInput
-  placeholder="Search ayurvedic products..."
-  placeholderTextColor="#777"
-  style={styles.searchInput}
-  value={search}
-  onChangeText={setSearch}
-/>
+            placeholder="Search ayurvedic products..."
+            placeholderTextColor="#777"
+            style={styles.searchInput}
+            value={search}
+            onChangeText={setSearch}
+          />
         </View>
 
         <View style={styles.hero}>
@@ -67,88 +78,81 @@ const filteredProducts = products.filter(product => {
           </Text>
 
           <TouchableOpacity style={styles.heroButton}>
-            <Text style={styles.heroButtonText}>
-              Shop Now
-            </Text>
+            <Text style={styles.heroButtonText}>Shop Now</Text>
           </TouchableOpacity>
         </View>
+
         <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  style={styles.categoryScroll}
->
-
-  {categories.map(category => (
-
-    <TouchableOpacity
-      key={category}
-      style={[
-        styles.categoryButton,
-        selectedCategory === category &&
-        styles.activeCategoryButton,
-      ]}
-      onPress={() => setSelectedCategory(category)}
-    >
-
-      <Text
-        style={[
-          styles.categoryButtonText,
-          selectedCategory === category &&
-          styles.activeCategoryButtonText,
-        ]}
-      >
-        {category}
-      </Text>
-
-    </TouchableOpacity>
-
-  ))}
-
-</ScrollView>
-        <Text style={styles.sectionTitle}>
-          Best Selling Products
-        </Text>
-
-        <View style={styles.productGrid}>
-          {filteredProducts.map(product => (
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryScroll}
+        >
+          {categories.map(category => (
             <TouchableOpacity
-              key={product.id}
-              style={styles.productCard}
-              onPress={() =>
-                navigation.navigate('ProductDetails', { product })
-              }
+              key={category}
+              style={[
+                styles.categoryButton,
+                selectedCategory === category && styles.activeCategoryButton,
+              ]}
+              onPress={() => setSelectedCategory(category)}
             >
-
-              <View style={styles.productImageBox}>
-                <Image
-                  source={product.images[0]}
-                  style={styles.productImg}
-                />
-              </View>
-
-              <Text style={styles.productName}>
-                {product.name}
+              <Text
+                style={[
+                  styles.categoryButtonText,
+                  selectedCategory === category &&
+                    styles.activeCategoryButtonText,
+                ]}
+              >
+                {category}
               </Text>
-
-              <View style={styles.priceRow}>
-                <Text style={styles.oldPrice}>
-                  ₹{product.oldPrice}
-                </Text>
-
-                <Text style={styles.price}>
-                  ₹{product.price}
-                </Text>
-              </View>
-
-              <View style={styles.cartButton}>
-                <Text style={styles.cartButtonText}>
-                  View
-                </Text>
-              </View>
-
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
+
+        <Text style={styles.sectionTitle}>Products from Backend</Text>
+
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#1F4D36"
+            style={{ marginTop: 30 }}
+          />
+        ) : (
+          <View style={styles.productGrid}>
+            {filteredProducts.map(product => (
+              <TouchableOpacity
+                key={product.id}
+                style={styles.productCard}
+                onPress={() =>
+                  navigation.navigate('ProductDetails', { product })
+                }
+              >
+                <View style={styles.productImageBox}>
+                  <Text style={styles.productEmoji}>🌿</Text>
+                </View>
+
+                <Text style={styles.categoryText}>{product.category}</Text>
+
+                <Text style={styles.productName}>{product.name}</Text>
+
+                <View style={styles.priceRow}>
+                  <Text style={styles.oldPrice}>₹{product.oldPrice}</Text>
+                  <Text style={styles.price}>₹{product.price}</Text>
+                </View>
+
+                <Text style={styles.stockText}>
+                  {product.stock > 0
+                    ? `In stock`
+                    : 'Out of stock'}
+                </Text>
+
+                <View style={styles.cartButton}>
+                  <Text style={styles.cartButtonText}>View</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
       </ScrollView>
     </SafeAreaView>
@@ -227,6 +231,32 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  categoryScroll: {
+    paddingLeft: 20,
+    marginBottom: 20,
+  },
+
+  categoryButton: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 18,
+    marginRight: 10,
+  },
+
+  activeCategoryButton: {
+    backgroundColor: '#1F4D36',
+  },
+
+  categoryButtonText: {
+    color: '#1F4D36',
+    fontWeight: '600',
+  },
+
+  activeCategoryButtonText: {
+    color: '#FFFFFF',
+  },
+
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
@@ -258,35 +288,48 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  productImg: {
-    width: '100%',
-    height: 110,
-    resizeMode: 'contain',
+  productEmoji: {
+    fontSize: 48,
   },
 
-  productName: {
-    color: '#3A2E25',
+  categoryText: {
+    color: '#C8A96B',
     fontWeight: '700',
-    marginTop: 10,
-    height: 42,
+    fontSize: 12,
+    marginTop: 8,
   },
+
+ productName: {
+  fontSize: 16,
+  fontWeight: '700',
+  color: '#4A3B35',
+  marginTop: 10,
+  minHeight: 50,
+},
 
   priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     marginTop: 6,
   },
 
   oldPrice: {
     color: '#777',
     textDecorationLine: 'line-through',
+    marginRight: 8,
   },
 
   price: {
     color: '#D91E46',
     fontWeight: '800',
     fontSize: 16,
+  },
+
+  stockText: {
+    color: '#1F4D36',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 6,
   },
 
   cartButton: {
@@ -301,29 +344,4 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
   },
-  categoryScroll: {
-  paddingLeft: 20,
-  marginBottom: 20,
-},
-
-categoryButton: {
-  backgroundColor: '#FFFFFF',
-  paddingHorizontal: 18,
-  paddingVertical: 10,
-  borderRadius: 18,
-  marginRight: 10,
-},
-
-activeCategoryButton: {
-  backgroundColor: '#1F4D36',
-},
-
-categoryButtonText: {
-  color: '#1F4D36',
-  fontWeight: '600',
-},
-
-activeCategoryButtonText: {
-  color: '#FFFFFF',
-},
 });

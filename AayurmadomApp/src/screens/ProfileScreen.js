@@ -1,51 +1,57 @@
-import React from 'react';
-
+import React, { useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  Alert,
 } from 'react-native';
 
+import { AuthContext } from '../context/AuthContext';
+
 export default function ProfileScreen() {
+  const { userEmail, logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          onPress: async () => {
+            await logout();
+          },
+        },
+      ]
+    );
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.title}>My Profile</Text>
 
-      <View style={styles.profileBox}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>M</Text>
-        </View>
+      <View style={styles.profileCard}>
+        <Text style={styles.label}>Email</Text>
 
-        <Text style={styles.name}>Mahesh</Text>
-        <Text style={styles.email}>mahesh@example.com</Text>
+        <Text style={styles.email}>
+          {userEmail}
+        </Text>
       </View>
 
-      <View style={styles.menuBox}>
-
-        <MenuItem title="My Orders" />
-        <MenuItem title="My Consultations" />
-        <MenuItem title="Saved Address" />
-        <MenuItem title="Wishlist" />
-        <MenuItem title="Payment Methods" />
-        <MenuItem title="Help & Support" />
-        <MenuItem title="Privacy Policy" />
-        <MenuItem title="Logout" danger />
-
-      </View>
-
-    </ScrollView>
-  );
-}
-
-function MenuItem({ title, danger }) {
-  return (
-    <TouchableOpacity style={styles.menuItem}>
-      <Text style={[styles.menuText, danger && styles.dangerText]}>
-        {title}
-      </Text>
-      <Text style={styles.arrow}>›</Text>
-    </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={handleLogout}
+      >
+        <Text style={styles.logoutText}>
+          Logout
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -56,69 +62,43 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 
-  profileBox: {
-    backgroundColor: '#1F4D36',
-    borderRadius: 28,
-    padding: 25,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-
-  avatar: {
-    width: 85,
-    height: 85,
-    borderRadius: 45,
-    backgroundColor: '#C8A96B',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-
-  avatarText: {
-    fontSize: 38,
+  title: {
+    fontSize: 28,
     fontWeight: '800',
     color: '#1F4D36',
+    marginTop: 20,
+    marginBottom: 25,
   },
 
-  name: {
-    color: '#FFFFFF',
-    fontSize: 26,
-    fontWeight: '800',
+  profileCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 20,
+  },
+
+  label: {
+    fontSize: 14,
+    color: '#888',
   },
 
   email: {
-    color: '#E6D9BD',
-    marginTop: 4,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1F4D36',
+    marginTop: 8,
   },
 
-  menuBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    paddingVertical: 8,
-  },
-
-  menuItem: {
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1E8D5',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  logoutButton: {
+    backgroundColor: '#D91E46',
+    marginTop: 30,
+    paddingVertical: 16,
+    borderRadius: 18,
     alignItems: 'center',
   },
 
-  menuText: {
+  logoutText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
     fontSize: 16,
-    fontWeight: '600',
-    color: '#3A2E25',
-  },
-
-  dangerText: {
-    color: '#D91E46',
-  },
-
-  arrow: {
-    fontSize: 28,
-    color: '#AAA',
   },
 });

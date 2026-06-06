@@ -47,10 +47,9 @@ export default function CartScreen({ navigation }) {
 
               <View style={styles.card}>
 
-                <Image
-                  source={item.images[0]}
-                  style={styles.image}
-                />
+                <View style={styles.image}>
+                  <Text style={styles.imageIcon}>🌿</Text>
+                </View>
 
                 <View style={styles.info}>
 

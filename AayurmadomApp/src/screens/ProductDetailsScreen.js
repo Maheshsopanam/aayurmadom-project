@@ -1,13 +1,13 @@
-import { useContext } from 'react';
-import React from 'react';
+import React, { useContext } from 'react';
+
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   TouchableOpacity,
 } from 'react-native';
+
 import { CartContext } from '../context/CartContext';
 
 export default function ProductDetailsScreen({ route }) {
@@ -15,26 +15,18 @@ export default function ProductDetailsScreen({ route }) {
   const { addToCart } = useContext(CartContext);
 
   return (
-    
     <ScrollView style={styles.container}>
-
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-      >
-        {product.images.map((img, index) => (
-          <Image
-            key={index}
-            source={img}
-            style={styles.productImage}
-          />
-        ))}
-      </ScrollView>
+      <View style={styles.backendImageBox}>
+        <Text style={styles.backendImageIcon}>🌿</Text>
+        <Text style={styles.backendImageText}>
+          {product.imageUrl}
+        </Text>
+      </View>
 
       <View style={styles.content}>
-
-        <Text style={styles.category}>{product.category}</Text>
+        <Text style={styles.category}>
+          {product.category}
+        </Text>
 
         <Text style={styles.name}>
           {product.name}
@@ -70,10 +62,14 @@ export default function ProductDetailsScreen({ route }) {
           <Text style={styles.bullet}>
             • No harmful chemicals
           </Text>
+
+          r
         </View>
 
-        <TouchableOpacity style={styles.cartButton}
-        onPress={()=>addToCart(product)}>
+        <TouchableOpacity
+          style={styles.cartButton}
+          onPress={() => addToCart(product)}
+        >
           <Text style={styles.cartButtonText}>
             Add to Cart
           </Text>
@@ -84,11 +80,8 @@ export default function ProductDetailsScreen({ route }) {
             Buy Now
           </Text>
         </TouchableOpacity>
-
       </View>
-
     </ScrollView>
-    
   );
 }
 
@@ -98,11 +91,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F2E7',
   },
 
-  productImage: {
-    width: 400,
-    height: 350,
-    resizeMode: 'contain',
+  backendImageBox: {
+    height: 320,
     backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  backendImageIcon: {
+    fontSize: 70,
+  },
+
+  backendImageText: {
+    color: '#777',
+    marginTop: 12,
   },
 
   content: {
@@ -197,4 +199,3 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
 });
-
