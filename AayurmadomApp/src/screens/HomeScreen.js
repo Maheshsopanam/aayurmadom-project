@@ -9,9 +9,11 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 
 import { getProducts } from '../api/productApi';
+import Logo from '../assets/Logo.png';
 
 export default function HomeScreen({ navigation }) {
   const [products, setProducts] = useState([]);
@@ -36,6 +38,15 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const getImageUrl = url => {
+    if (!url) return null;
+
+    return url.replace(
+      'http://localhost:8080',
+      'http://192.168.30.103:8080'
+    );
+  };
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name
       ?.toLowerCase()
@@ -54,14 +65,20 @@ export default function HomeScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View style={styles.header}>
-          <Text style={styles.logo}>AAYURMADOM</Text>
-          <Text style={styles.tagline}>Purely Natural, Purely You</Text>
+          <Image source={Logo} style={styles.logoImage} />
+
+          <View>
+            <Text style={styles.logoText}>AAYURMADOM</Text>
+            <Text style={styles.tagline}>Purely Natural, Purely You</Text>
+          </View>
         </View>
 
         <View style={styles.searchBox}>
+          <Text style={styles.searchIcon}>🔍</Text>
+
           <TextInput
             placeholder="Search ayurvedic products..."
-            placeholderTextColor="#777"
+            placeholderTextColor="#8A7B66"
             style={styles.searchInput}
             value={search}
             onChangeText={setSearch}
@@ -69,18 +86,22 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <View style={styles.hero}>
+          <Text style={styles.heroSmall}>Ayurvedic Wellness</Text>
+
           <Text style={styles.heroTitle}>
             Traditional Ayurveda for Modern Living
           </Text>
 
           <Text style={styles.heroText}>
-            Natural skincare, haircare and wellness products.
+            Explore natural skincare, haircare and wellness products trusted by tradition.
           </Text>
 
           <TouchableOpacity style={styles.heroButton}>
             <Text style={styles.heroButtonText}>Shop Now</Text>
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.categoryTitle}>Categories</Text>
 
         <ScrollView
           horizontal
@@ -109,48 +130,63 @@ export default function HomeScreen({ navigation }) {
           ))}
         </ScrollView>
 
-        <Text style={styles.sectionTitle}>Products from Backend</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Featured Products</Text>
+          <Text style={styles.productCount}>{filteredProducts.length} items</Text>
+        </View>
 
         {loading ? (
           <ActivityIndicator
             size="large"
             color="#1F4D36"
-            style={{ marginTop: 30 }}
+            style={{ marginTop: 40 }}
           />
+        ) : filteredProducts.length === 0 ? (
+          <Text style={styles.emptyText}>No products found</Text>
         ) : (
           <View style={styles.productGrid}>
-            {filteredProducts.map(product => (
-              <TouchableOpacity
-                key={product.id}
-                style={styles.productCard}
-                onPress={() =>
-                  navigation.navigate('ProductDetails', { product })
-                }
-              >
-                <View style={styles.productImageBox}>
-                  <Text style={styles.productEmoji}>🌿</Text>
-                </View>
+            {filteredProducts.map(product => {
+              const imageUrl = getImageUrl(product.imageUrl1);
 
-                <Text style={styles.categoryText}>{product.category}</Text>
+              return (
+                <TouchableOpacity
+                  key={product.id}
+                  style={styles.productCard}
+                  onPress={() =>
+                    navigation.navigate('ProductDetails', { product })
+                  }
+                >
+                  <View style={styles.productImageBox}>
+                    {imageUrl ? (
+                      <Image
+                        source={{ uri: imageUrl }}
+                        style={styles.productImage}
+                      />
+                    ) : (
+                      <Text style={styles.productEmoji}>🌿</Text>
+                    )}
+                  </View>
 
-                <Text style={styles.productName}>{product.name}</Text>
+                  <Text style={styles.categoryText}>{product.category}</Text>
 
-                <View style={styles.priceRow}>
-                  <Text style={styles.oldPrice}>₹{product.oldPrice}</Text>
-                  <Text style={styles.price}>₹{product.price}</Text>
-                </View>
+                  <Text
+                    style={styles.productName}
+                    numberOfLines={2}
+                  >
+                    {product.name}
+                  </Text>
 
-                <Text style={styles.stockText}>
-                  {product.stock > 0
-                    ? `In stock`
-                    : 'Out of stock'}
-                </Text>
+                  <View style={styles.priceRow}>
+                    <Text style={styles.oldPrice}>₹{product.oldPrice}</Text>
+                    <Text style={styles.price}>₹{product.price}</Text>
+                  </View>
 
-                <View style={styles.cartButton}>
-                  <Text style={styles.cartButtonText}>View</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                  <View style={styles.cartButton}>
+                    <Text style={styles.cartButtonText}>View Product</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         )}
 
@@ -166,81 +202,116 @@ const styles = StyleSheet.create({
   },
 
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 25,
-    paddingBottom: 15,
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 16,
   },
 
-  logo: {
-    fontSize: 28,
-    fontWeight: '800',
+  logoImage: {
+    width: 58,
+    height: 58,
+    resizeMode: 'contain',
+    marginRight: 12,
+  },
+
+  logoText: {
+    fontSize: 25,
+    fontWeight: '900',
     color: '#1F4D36',
     letterSpacing: 1,
   },
 
   tagline: {
     color: '#6B5E4A',
-    marginTop: 4,
+    marginTop: 3,
+    fontSize: 13,
+    fontWeight: '600',
   },
 
   searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
-    borderRadius: 18,
-    paddingHorizontal: 15,
+    borderRadius: 20,
+    paddingHorizontal: 16,
     marginBottom: 18,
+    height: 52,
+  },
+
+  searchIcon: {
+    fontSize: 18,
+    marginRight: 8,
   },
 
   searchInput: {
-    height: 50,
+    flex: 1,
     fontSize: 15,
+    color: '#3A2E25',
   },
 
   hero: {
     backgroundColor: '#1F4D36',
     marginHorizontal: 20,
-    borderRadius: 28,
+    borderRadius: 30,
     padding: 24,
-    marginBottom: 25,
+    marginBottom: 24,
+  },
+
+  heroSmall: {
+    color: '#C8A96B',
+    fontWeight: '800',
+    marginBottom: 8,
   },
 
   heroTitle: {
-    color: '#F8F2E7',
-    fontSize: 26,
-    fontWeight: '700',
-    lineHeight: 34,
+    color: '#FFFFFF',
+    fontSize: 27,
+    fontWeight: '900',
+    lineHeight: 35,
   },
 
   heroText: {
     color: '#E6D9BD',
     marginTop: 12,
     fontSize: 15,
+    lineHeight: 22,
   },
 
   heroButton: {
     backgroundColor: '#C8A96B',
     alignSelf: 'flex-start',
-    paddingHorizontal: 22,
+    paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 16,
-    marginTop: 18,
+    borderRadius: 18,
+    marginTop: 20,
   },
 
   heroButtonText: {
     color: '#1F4D36',
-    fontWeight: '700',
+    fontWeight: '900',
+  },
+
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#3A2E25',
+    marginHorizontal: 20,
+    marginBottom: 12,
   },
 
   categoryScroll: {
     paddingLeft: 20,
-    marginBottom: 20,
+    marginBottom: 24,
   },
 
   categoryButton: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 18,
+    paddingVertical: 11,
+    borderRadius: 20,
     marginRight: 10,
   },
 
@@ -250,19 +321,31 @@ const styles = StyleSheet.create({
 
   categoryButtonText: {
     color: '#1F4D36',
-    fontWeight: '600',
+    fontWeight: '800',
+    fontSize: 13,
   },
 
   activeCategoryButtonText: {
     color: '#FFFFFF',
   },
 
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#3A2E25',
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginHorizontal: 20,
+    alignItems: 'center',
     marginBottom: 14,
+  },
+
+  sectionTitle: {
+    fontSize: 21,
+    fontWeight: '900',
+    color: '#3A2E25',
+  },
+
+  productCount: {
+    color: '#8A7B66',
+    fontWeight: '700',
   },
 
   productGrid: {
@@ -276,16 +359,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: '46%',
     margin: '2%',
-    borderRadius: 22,
+    borderRadius: 24,
     padding: 12,
   },
 
   productImageBox: {
-    height: 120,
+    height: 130,
     backgroundColor: '#F3ECD9',
-    borderRadius: 18,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+
+  productImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 
   productEmoji: {
@@ -294,54 +384,56 @@ const styles = StyleSheet.create({
 
   categoryText: {
     color: '#C8A96B',
-    fontWeight: '700',
+    fontWeight: '900',
     fontSize: 12,
-    marginTop: 8,
+    marginTop: 10,
   },
 
- productName: {
-  fontSize: 16,
-  fontWeight: '700',
-  color: '#4A3B35',
-  marginTop: 10,
-  minHeight: 50,
-},
+  productName: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#4A3B35',
+    marginTop: 7,
+    minHeight: 44,
+  },
 
   priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: 7,
   },
 
   oldPrice: {
-    color: '#777',
+    color: '#888',
     textDecorationLine: 'line-through',
     marginRight: 8,
+    fontSize: 13,
   },
 
   price: {
     color: '#D91E46',
-    fontWeight: '800',
-    fontSize: 16,
-  },
-
-  stockText: {
-    color: '#1F4D36',
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 6,
+    fontWeight: '900',
+    fontSize: 17,
   },
 
   cartButton: {
     backgroundColor: '#1F4D36',
-    paddingVertical: 9,
-    borderRadius: 14,
+    paddingVertical: 10,
+    borderRadius: 15,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 13,
   },
 
   cartButtonText: {
     color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 13,
+  },
+
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#8A7B66',
     fontWeight: '700',
   },
 });

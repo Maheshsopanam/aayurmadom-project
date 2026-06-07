@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
 public class ProductController {
 
     private final ProductRepository productRepository;
@@ -37,8 +38,10 @@ public class ProductController {
         product.setOldPrice(updatedProduct.getOldPrice());
         product.setPrice(updatedProduct.getPrice());
         product.setStock(updatedProduct.getStock());
-        product.setImageUrl(updatedProduct.getImageUrl());
-
+        product.setImageUrl1(updatedProduct.getImageUrl1());
+        product.setImageUrl2(updatedProduct.getImageUrl2());
+        product.setImageUrl3(updatedProduct.getImageUrl3());
+        product.setImageUrl4(updatedProduct.getImageUrl4());
         return productRepository.save(product);
     }
     @DeleteMapping("/{id}")
@@ -49,4 +52,5 @@ public class ProductController {
     public void deleteAllProducts() {
         productRepository.deleteAll();
     }
+
 }

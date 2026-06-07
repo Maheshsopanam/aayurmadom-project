@@ -6,36 +6,36 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  const [userEmail, setUserEmail] = useState('');
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     checkLoginStatus();
   }, []);
 
   const checkLoginStatus = async () => {
-    try {
-      const storedEmail = await AsyncStorage.getItem('userEmail');
+  try {
+    const storedUser = await AsyncStorage.getItem('user');
 
-      if (storedEmail) {
-        setIsLoggedIn(true);
-        setUserEmail(storedEmail);
-      }
-    } catch (error) {
-      console.log('Auth check error:', error);
-    } finally {
-      setLoadingAuth(false);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
     }
-  };
+  } catch (error) {
+    console.log('Auth check error:', error);
+  } finally {
+    setLoadingAuth(false);
+  }
+};
 
-  const login = async email => {
-    await AsyncStorage.setItem('userEmail', email);
-    setUserEmail(email);
-    setIsLoggedIn(true);
-  };
+  const login = async userData => {
+  await AsyncStorage.setItem('user', JSON.stringify(userData));
+  setUser(userData);
+  setIsLoggedIn(true);
+};
 
   const logout = async () => {
-    await AsyncStorage.removeItem('userEmail');
-    setUserEmail('');
+    await AsyncStorage.removeItem('user');
+    setUser(null);
     setIsLoggedIn(false);
   };
 
@@ -44,7 +44,8 @@ export const AuthProvider = ({ children }) => {
       value={{
         isLoggedIn,
         loadingAuth,
-        userEmail,
+        user,
+        userEmail: user?.email || '',
         login,
         logout,
       }}

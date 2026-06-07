@@ -1,0 +1,136 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: #1f4d36;
+  color: white;
+  padding: 28px 22px;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.main-content {
+  flex: 1;
+  padding: 32px;
+  background: #f8f2e7;
+}
+.form-card {
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 22px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 24px rgba(31, 77, 54, 0.12);
+}
+
+.form-card h2 {
+  margin-top: 0;
+  color: #1f4d36;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.form-card input,
+.form-card textarea {
+  width: 100%;
+  border: 1px solid #e5decf;
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-size: 15px;
+  outline: none;
+  background: #f8f2e7;
+}
+
+.form-card textarea {
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 14px;
+}
+
+.form-card input:focus,
+.form-card textarea:focus {
+  border-color: #1f4d36;
+}
+.image-preview-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.product-preview-img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #e5decf;
+}
+.upload-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+}
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.status-delivered {
+  background-color: #28a745;
+}
+
+.status-cancelled {
+  background-color: #dc3545;
+}
+
+.status-processing {
+  background-color: #fd7e14;
+}
+
+.status-shipped {
+  background-color: #fd7e14;
+}
+
+.status-placed {
+  background-color: #6c757d;
+}

@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User loginRequest) {
+    public Object login(@RequestBody User loginRequest) {
 
         Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
@@ -44,6 +44,17 @@ public class AuthController {
             return "Invalid email or password";
         }
 
-        return "Login successful";
+        return user;
+    }
+    @PutMapping("/user/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setName(updatedUser.getName());
+        user.setPhone(updatedUser.getPhone());
+
+        return userRepository.save(user);
     }
 }

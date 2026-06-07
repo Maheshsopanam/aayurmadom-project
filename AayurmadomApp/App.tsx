@@ -11,6 +11,9 @@ import OrderSuccessScreen from './src/screens/OrderSuccessScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import MyOrdersScreen from './src/screens/MyOrdersScreen';
+import MyConsultationsScreen from './src/screens/MyConsultationsScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
+
 import { CartProvider } from './src/context/CartContext';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 
@@ -73,6 +76,28 @@ function AppNavigator() {
                   headerTintColor: '#FFFFFF',
                 }}
               />
+              <Stack.Screen
+                    name="EditProfile"
+                    component={EditProfileScreen}
+                    options={{
+                      title: 'Edit Profile',
+                      headerStyle: {
+                        backgroundColor: '#1F4D36',
+                      },
+                      headerTintColor: '#FFFFFF',
+                    }}
+                  />
+              <Stack.Screen
+                  name="MyConsultations"
+                  component={MyConsultationsScreen}
+                  options={{
+                    title: 'My Consultations',
+                    headerStyle: {
+                      backgroundColor: '#1F4D36',
+                    },
+                    headerTintColor: '#FFFFFF',
+                  }}
+                />
             <Stack.Screen
               name="Checkout"
               component={CheckoutScreen}

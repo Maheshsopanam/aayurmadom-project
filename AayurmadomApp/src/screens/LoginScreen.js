@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
+
 import {
   View,
   Text,
@@ -10,11 +10,14 @@ import {
 } from 'react-native';
 
 import { loginUser } from '../api/authApi';
+import { AuthContext } from '../context/AuthContext';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
+  const { login } = useContext(AuthContext);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Missing Details', 'Please enter email and password');
@@ -27,14 +30,15 @@ export default function LoginScreen({ navigation }) {
         password,
       });
 
-      Alert.alert('Login', result);
+      if (result && typeof result === 'object' && result.email) {
+        await login(result);
+        return;
+      }
 
-      if (result === 'Login successful') {
-  await login(email);
-}
+      Alert.alert('Login Failed', String(result));
     } catch (error) {
-      Alert.alert('Error', 'Login failed');
-      console.log(error);
+      console.log('Login error:', error);
+      Alert.alert('Error', 'Login failed. Please try again.');
     }
   };
 
@@ -62,10 +66,6 @@ export default function LoginScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.link}>New user? Create account</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
+
   logo: {
     fontSize: 30,
     fontWeight: '800',
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
+
   title: {
     fontSize: 26,
     fontWeight: '800',
@@ -91,6 +93,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 30,
   },
+
   input: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
@@ -98,6 +101,7 @@ const styles = StyleSheet.create({
     height: 54,
     marginBottom: 14,
   },
+
   button: {
     backgroundColor: '#1F4D36',
     paddingVertical: 16,
@@ -105,15 +109,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+
   buttonText: {
     color: '#FFFFFF',
     fontWeight: '800',
     fontSize: 17,
-  },
-  link: {
-    color: '#1F4D36',
-    textAlign: 'center',
-    marginTop: 22,
-    fontWeight: '700',
   },
 });

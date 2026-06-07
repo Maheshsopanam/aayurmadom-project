@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 
 import { CartContext } from '../context/CartContext';
@@ -14,14 +15,41 @@ export default function ProductDetailsScreen({ route }) {
   const { product } = route.params;
   const { addToCart } = useContext(CartContext);
 
+  const images = [
+    product.imageUrl1,
+    product.imageUrl2,
+    product.imageUrl3,
+    product.imageUrl4,
+  ].filter(Boolean);
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.backendImageBox}>
-        <Text style={styles.backendImageIcon}>🌿</Text>
-        <Text style={styles.backendImageText}>
-          {product.imageUrl}
-        </Text>
-      </View>
+      {images.length > 0 ? (
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+        >
+          {images.map((img, index) => {
+            const imageUri = img.replace(
+              'http://localhost:8080',
+              'http://192.168.30.103:8080'
+            );
+
+            return (
+              <Image
+                key={index}
+                source={{ uri: imageUri }}
+                style={styles.detailImage}
+              />
+            );
+          })}
+        </ScrollView>
+      ) : (
+        <View style={styles.backendImageBox}>
+          <Text style={styles.backendImageIcon}>🌿</Text>
+        </View>
+      )}
 
       <View style={styles.content}>
         <Text style={styles.category}>
@@ -62,8 +90,6 @@ export default function ProductDetailsScreen({ route }) {
           <Text style={styles.bullet}>
             • No harmful chemicals
           </Text>
-
-          r
         </View>
 
         <TouchableOpacity
@@ -102,9 +128,11 @@ const styles = StyleSheet.create({
     fontSize: 70,
   },
 
-  backendImageText: {
-    color: '#777',
-    marginTop: 12,
+  detailImage: {
+    width: 400,
+    height: 320,
+    resizeMode: 'cover',
+    backgroundColor: '#FFFFFF',
   },
 
   content: {

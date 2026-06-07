@@ -30,4 +30,17 @@ public class OrderController {
     public List<Order> getOrdersByUser(@PathVariable String email) {
         return orderRepository.findByUserEmail(email);
     }
+
+    @PutMapping("/{id}/status")
+    public Order updateOrderStatus(
+            @PathVariable Long id,
+            @RequestParam String status
+    ) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        order.setStatus(status);
+
+        return orderRepository.save(order);
+    }
 }

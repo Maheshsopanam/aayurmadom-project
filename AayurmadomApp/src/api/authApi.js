@@ -11,3 +11,7 @@ export const loginUser = async loginData => {
   const response = await axios.post(`${API_URL}/login`, loginData);
   return response.data;
 };
+export const updateUserProfile = async (id, userData) => {
+  const response = await axios.put(`${API_URL}/user/${id}`, userData);
+  return response.data;
+};
